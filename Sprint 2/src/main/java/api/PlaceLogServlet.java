@@ -35,6 +35,7 @@ public class PlaceLogServlet extends HttpServlet {
       PlaceLog placeLog = new Gson().fromJson(body, PlaceLog.class);
       // Long id = placeLogDao.createPlaceLog(placeLog);
       response.setStatus(HttpServletResponse.SC_CREATED);
+      // response.getWriter().write(new Gson().toJson(id));
       response.getWriter().write(new Gson().toJson(placeLogDao.createPlaceLog(placeLog)));
     } catch (Exception e) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
