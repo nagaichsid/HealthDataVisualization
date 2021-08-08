@@ -1,21 +1,21 @@
 package api;
 
 import com.google.gson.Gson;
-import dao.PlaceLogDao;
+import dao.DailyEventDao;
 import java.io.BufferedReader;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import model.PlaceLog;
+import model.DailyEvent;
 
-public class PlaceLogServlet extends HttpServlet {
+public class DailyEventServlet extends HttpServlet {
 
-  private PlaceLogDao placeLogDao;
+  private DailyEventDao dailyEventDao;
 
-  public PlaceLogServlet() {
-    placeLogDao = PlaceLogDao.getInstance();
+  public DailyEventServlet() {
+    dailyEventDao = DailyEventDao.getInstance();
   }
 
   @Override
@@ -32,11 +32,9 @@ public class PlaceLogServlet extends HttpServlet {
     }
     String body = sb.toString();
     try {
-      PlaceLog placeLog = new Gson().fromJson(body, PlaceLog.class);
-      // Long id = placeLogDao.createPlaceLog(placeLog);
+      DailyEvent dailyEvent = new Gson().fromJson(body, DailyEvent.class);
+      dailyEventDao.createDailyEvent(dailyEvent);
       response.setStatus(HttpServletResponse.SC_CREATED);
-      // response.getWriter().write(new Gson().toJson(id));
-      response.getWriter().write(new Gson().toJson(placeLogDao.createPlaceLog(placeLog)));
     } catch (Exception e) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       response.getWriter().write("invalid url");

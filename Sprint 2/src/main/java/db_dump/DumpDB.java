@@ -27,9 +27,9 @@ public class DumpDB {
 
     JsonParser parser = new JsonParser();
     JsonArray array;
-    try{
+    try {
       array = (JsonArray) parser.parse(new FileReader("storyline.json"));
-      for(int i = 0; i < array.size();i++ ){
+      for (int i = 0; i < array.size();i++ ) {
         JsonObject obj = array.get(i).getAsJsonObject();
         Date date = getDate(obj.get("date").getAsString());
 
@@ -49,7 +49,7 @@ public class DumpDB {
             }
 
             PlaceLog placeLog = getPlaceLogFromJson(element, date);
-            if(placeLog==null){
+            if (placeLog == null) {
               continue;
             }
             Long placeLogId = placeLogDao.createPlaceLog(placeLog);
@@ -70,7 +70,7 @@ public class DumpDB {
           exception.printStackTrace();
         }
       }
-    }catch(Exception exception){
+    } catch(Exception exception){
       exception.printStackTrace();
     }
   }
