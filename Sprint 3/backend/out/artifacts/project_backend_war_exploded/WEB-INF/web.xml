@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+  <servlet>
+    <servlet-name>PlaceActivityServlet</servlet-name>
+    <servlet-class>api.PlaceActivityServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>PlaceActivityServlet</servlet-name>
+    <url-pattern>/activities/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>PlaceLogServlet</servlet-name>
+    <servlet-class>api.PlaceLogServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>PlaceLogServlet</servlet-name>
+    <url-pattern>/placeLog/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>WalkingActivityServlet</servlet-name>
+    <servlet-class>api.WalkingActivityServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>WalkingActivityServlet</servlet-name>
+    <url-pattern>/walkingActivity/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>DailyEventServlet</servlet-name>
+    <servlet-class>api.DailyEventServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DailyEventServlet</servlet-name>
+    <url-pattern>/dailyEvents/*</url-pattern>
+  </servlet-mapping>
+</web-app>
