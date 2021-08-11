@@ -1,4 +1,4 @@
-package Test;
+package test;
 
 import static org.junit.Assert.*;
 
@@ -60,37 +60,52 @@ public class DailyEventTest {
 
   @org.junit.Test
   public void setStep() {
+    int testStep = 1;
+    test.setStep(1);
+    assertEquals((int) test.getStep(), testStep);
   }
 
   @org.junit.Test
   public void getActivity() {
+    assertEquals(test.getActivity(), "walking");
   }
 
   @org.junit.Test
   public void setActivity() {
+    test.setActivity("running");
+    assertEquals(test.getActivity(), "running");
   }
 
   @org.junit.Test
   public void getCalorie() {
+    assertEquals(test.getCalorie(), calorie);
   }
 
   @org.junit.Test
   public void setCalorie() {
+    test.setCalorie(20);
+    assertEquals((int) test.getCalorie(), 20);
   }
 
   @org.junit.Test
   public void getDistance() {
+    assertEquals(test.getDistance(), distance);
   }
 
   @org.junit.Test
   public void setDistance() {
+    test.setDistance(21.00);
+    assertEquals(test.getDistance(), 21.00, 0.001);
   }
 
   @org.junit.Test
   public void getDuration() {
+    assertEquals(test.getDuration(), duration, 0.001);
   }
 
   @org.junit.Test
   public void setDuration() {
+    test.setDuration(22.01);
+    assertEquals(test.getDuration(), 22.01, 0.001);
   }
 }

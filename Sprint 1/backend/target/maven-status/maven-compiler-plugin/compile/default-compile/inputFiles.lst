@@ -1,0 +1,11 @@
+/Users/Sid/Documents/CS5500_Project/Sprint 1/backend/src/main/java/model/PlaceLog.java
+/Users/Sid/Documents/CS5500_Project/Sprint 1/backend/src/main/java/db_dump/ParserUtils.java
+/Users/Sid/Documents/CS5500_Project/Sprint 1/backend/src/main/java/dao/DailyEventDao.java
+/Users/Sid/Documents/CS5500_Project/Sprint 1/backend/src/main/java/dao/DBCPDataSource.java
+/Users/Sid/Documents/CS5500_Project/Sprint 1/backend/src/main/java/dao/WalkingActivityDao.java
+/Users/Sid/Documents/CS5500_Project/Sprint 1/backend/src/main/java/model/WalkingActivity.java
+/Users/Sid/Documents/CS5500_Project/Sprint 1/backend/src/main/java/db_dump/DumpDB.java
+/Users/Sid/Documents/CS5500_Project/Sprint 1/backend/src/main/java/dao/PlaceLogDao.java
+/Users/Sid/Documents/CS5500_Project/Sprint 1/backend/src/main/java/model/PlaceWithActivities.java
+/Users/Sid/Documents/CS5500_Project/Sprint 1/backend/src/main/java/api/DailyEventServlet.java
+/Users/Sid/Documents/CS5500_Project/Sprint 1/backend/src/main/java/model/DailyEvent.java

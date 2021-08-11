@@ -1,0 +1,11 @@
+dao/DailyEventDao.class
+dao/DBCPDataSource.class
+db_dump/DumpDB.class
+model/PlaceWithActivities.class
+api/DailyEventServlet.class
+db_dump/ParserUtils.class
+model/PlaceLog.class
+dao/WalkingActivityDao.class
+dao/PlaceLogDao.class
+model/WalkingActivity.class
+model/DailyEvent.class
