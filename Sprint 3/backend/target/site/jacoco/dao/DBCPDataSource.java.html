@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DBCPDataSource.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-backend</a> &gt; <a href="index.source.html" class="el_package">dao</a> &gt; <span class="el_source">DBCPDataSource.java</span></div><h1>DBCPDataSource.java</h1><pre class="source lang-java linenums">package dao;
+
+import com.zaxxer.hikari.HikariDataSource;
+
+<span class="nc" id="L5">public class DBCPDataSource {</span>
+  private static HikariDataSource dataSource;
+
+  //private static final String HOST_NAME = &quot;database-1.cdgrvwpcapvo.us-east-1.rds.amazonaws.com&quot;;
+  private static final String HOST_NAME = &quot;localhost&quot;;
+  private static final String PORT = &quot;3306&quot;;
+  private static final String DATABASE = &quot;FitnessApp&quot;;
+  private static final String USERNAME = &quot;root&quot;;
+  private static final String PASSWORD = &quot;614a7159509&quot;;
+
+  static {
+<span class="nc" id="L16">    dataSource = new HikariDataSource();</span>
+    try {
+<span class="nc" id="L18">      Class.forName(&quot;com.mysql.cj.jdbc.Driver&quot;);</span>
+<span class="nc" id="L19">    } catch (ClassNotFoundException e) {</span>
+<span class="nc" id="L20">      e.printStackTrace();</span>
+<span class="nc" id="L21">    }</span>
+    // https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-jdbc-url-format.html
+<span class="nc" id="L23">    String url = String.format(&quot;jdbc:mysql://%s:%s/%s?serverTimezone=UTC&quot;, HOST_NAME, PORT, DATABASE);</span>
+
+<span class="nc" id="L25">    dataSource.setJdbcUrl(url);</span>
+<span class="nc" id="L26">    dataSource.setUsername(USERNAME);</span>
+<span class="nc" id="L27">    dataSource.setPassword(PASSWORD);</span>
+<span class="nc" id="L28">  }</span>
+
+  public static HikariDataSource getDataSource() {
+<span class="nc" id="L31">    return dataSource;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

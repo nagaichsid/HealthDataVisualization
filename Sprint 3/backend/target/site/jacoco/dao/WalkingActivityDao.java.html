@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WalkingActivityDao.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-backend</a> &gt; <a href="index.source.html" class="el_package">dao</a> &gt; <span class="el_source">WalkingActivityDao.java</span></div><h1>WalkingActivityDao.java</h1><pre class="source lang-java linenums">package dao;
+
+// import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
+import com.zaxxer.hikari.HikariDataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import model.WalkingActivity;
+
+public class WalkingActivityDao {
+  private static HikariDataSource dataSource;
+<span class="nc" id="L14">  public static WalkingActivityDao walkingActivityDao = null;</span>
+
+<span class="nc" id="L16">  private WalkingActivityDao() {</span>
+<span class="nc" id="L17">    dataSource = DBCPDataSource.getDataSource();</span>
+<span class="nc" id="L18">  }</span>
+
+  public static WalkingActivityDao getInstance(){
+<span class="nc bnc" id="L21" title="All 2 branches missed.">    if(walkingActivityDao == null){</span>
+<span class="nc" id="L22">      walkingActivityDao = new WalkingActivityDao();</span>
+    }
+<span class="nc" id="L24">    return walkingActivityDao;</span>
+  }
+
+  public void createWalkingActivity(WalkingActivity walkingActivity) {
+<span class="nc" id="L28">    Connection conn = null;</span>
+<span class="nc" id="L29">    PreparedStatement preparedStatement = null;</span>
+<span class="nc" id="L30">    String insertQueryStatement = &quot;INSERT INTO WalkingActivity (PlaceLogId, Duration, Distance, Step, Calorie) &quot; +</span>
+        &quot;VALUES (?,?,?,?,?)&quot;;
+    try {
+<span class="nc" id="L33">      conn = dataSource.getConnection();</span>
+<span class="nc" id="L34">      preparedStatement = conn.prepareStatement(insertQueryStatement);</span>
+<span class="nc" id="L35">      preparedStatement.setLong(1, walkingActivity.getPlaceLogId());</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">      if(walkingActivity.getDuration().equals(null)){</span>
+<span class="nc" id="L37">        preparedStatement.setNull(2, Types.DECIMAL);</span>
+      }else{
+<span class="nc" id="L39">        preparedStatement.setDouble(2, walkingActivity.getDuration());</span>
+      }
+<span class="nc" id="L41">      preparedStatement.setDouble(3, walkingActivity.getDistance());</span>
+<span class="nc" id="L42">      preparedStatement.setInt(4, walkingActivity.getStep());</span>
+<span class="nc" id="L43">      preparedStatement.setInt(5, walkingActivity.getCalorie());</span>
+      // execute insert SQL statement
+<span class="nc" id="L45">      preparedStatement.executeUpdate();</span>
+
+<span class="nc" id="L47">    } catch (SQLException e) {</span>
+<span class="nc" id="L48">      e.printStackTrace();</span>
+    } finally {
+      try {
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        if (conn != null) {</span>
+<span class="nc" id="L52">          conn.close();</span>
+        }
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        if (preparedStatement != null) {</span>
+<span class="nc" id="L55">          preparedStatement.close();</span>
+        }
+<span class="nc" id="L57">      } catch (SQLException se) {</span>
+<span class="nc" id="L58">        se.printStackTrace();</span>
+<span class="nc" id="L59">      }</span>
+    }
+<span class="nc" id="L61">  }</span>
+
+  public WalkingActivity getWalkingActivitiesByLogId(Long logId) {
+<span class="nc" id="L64">    String selectWalkingActivities=&quot;SELECT SUM(Duration) AS SUM_DURATION, SUM(Distance) AS SUM_DISTANCE, SUM(Step) AS SUM_STEP, SUM(Calorie) AS SUM_CALORIE FROM WalkingActivity WHERE PlaceLogId=?;&quot;;</span>
+<span class="nc" id="L65">    Connection connection=null;</span>
+<span class="nc" id="L66">    PreparedStatement selectStatement=null;</span>
+<span class="nc" id="L67">    ResultSet resultSet=null;</span>
+    try {
+<span class="nc" id="L69">      connection=dataSource.getConnection();</span>
+<span class="nc" id="L70">      selectStatement=connection.prepareStatement(selectWalkingActivities);</span>
+<span class="nc" id="L71">      selectStatement.setLong(1, logId);</span>
+<span class="nc" id="L72">      resultSet=selectStatement.executeQuery();</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">      if(resultSet.next()) {</span>
+<span class="nc" id="L74">        return new WalkingActivity(</span>
+<span class="nc" id="L75">            resultSet.getDouble(&quot;SUM_Duration&quot;),</span>
+<span class="nc" id="L76">            resultSet.getDouble(&quot;SUM_Distance&quot;),</span>
+<span class="nc" id="L77">            resultSet.getInt(&quot;SUM_Step&quot;),</span>
+<span class="nc" id="L78">            resultSet.getInt(&quot;SUM_Calorie&quot;));</span>
+      }
+<span class="nc" id="L80">      return null;</span>
+<span class="nc" id="L81">    }catch (SQLException e) {</span>
+<span class="nc" id="L82">      e.printStackTrace();</span>
+    }finally {
+<span class="nc bnc" id="L84" title="All 2 branches missed.">      if(connection!=null) {</span>
+        try {
+<span class="nc" id="L86">          connection.close();</span>
+<span class="nc" id="L87">        } catch (SQLException e) {</span>
+<span class="nc" id="L88">          e.printStackTrace();</span>
+<span class="nc" id="L89">        }</span>
+      }
+<span class="nc bnc" id="L91" title="All 2 branches missed.">      if(selectStatement!=null) {</span>
+        try {
+<span class="nc" id="L93">          selectStatement.close();</span>
+<span class="nc" id="L94">        } catch (SQLException e) {</span>
+<span class="nc" id="L95">          e.printStackTrace();</span>
+<span class="nc" id="L96">        }</span>
+      }
+<span class="nc bnc" id="L98" title="All 2 branches missed.">      if(resultSet!=null) {</span>
+        try {
+<span class="nc" id="L100">          resultSet.close();</span>
+<span class="nc" id="L101">        } catch (SQLException e) {</span>
+<span class="nc" id="L102">          e.printStackTrace();</span>
+<span class="nc" id="L103">        }</span>
+      }
+    }
+<span class="nc" id="L106">    return null;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

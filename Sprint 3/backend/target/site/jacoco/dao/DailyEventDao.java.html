@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DailyEventDao.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-backend</a> &gt; <a href="index.source.html" class="el_package">dao</a> &gt; <span class="el_source">DailyEventDao.java</span></div><h1>DailyEventDao.java</h1><pre class="source lang-java linenums">package dao;
+
+import com.zaxxer.hikari.HikariDataSource;
+import db_dump.ParserUtils;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import model.DailyEvent;
+
+public class DailyEventDao {
+
+  private static HikariDataSource dataSource;
+<span class="nc" id="L19">  public static DailyEventDao dailyEventDao = null;</span>
+
+<span class="nc" id="L21">  private DailyEventDao() {</span>
+<span class="nc" id="L22">    dataSource = DBCPDataSource.getDataSource();</span>
+<span class="nc" id="L23">  }</span>
+
+  public static DailyEventDao getInstance() {
+<span class="nc bnc" id="L26" title="All 2 branches missed.">    if (dailyEventDao == null) {</span>
+<span class="nc" id="L27">      dailyEventDao = new DailyEventDao();</span>
+    }
+<span class="nc" id="L29">    return dailyEventDao;</span>
+  }
+
+  public Integer createDailyEvent(DailyEvent dailyEvent) {
+<span class="nc" id="L33">    Connection conn = null;</span>
+<span class="nc" id="L34">    PreparedStatement preparedStatement = null;</span>
+<span class="nc" id="L35">    String insertQueryStatement =</span>
+        &quot;INSERT INTO DailyEvent (Date, Activity, Step, Calorie, Distance, Duration) &quot; +
+            &quot;VALUES (?,?,?,?,?,?)&quot;;
+    try {
+<span class="nc" id="L39">      conn = dataSource.getConnection();</span>
+<span class="nc" id="L40">      preparedStatement = conn</span>
+<span class="nc" id="L41">          .prepareStatement(insertQueryStatement, PreparedStatement.RETURN_GENERATED_KEYS);</span>
+<span class="nc" id="L42">      preparedStatement.setDate(1, new Date(dailyEvent.getDate().getTime()));</span>
+<span class="nc" id="L43">      preparedStatement.setString(2, dailyEvent.getActivity());</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">      if (dailyEvent.getStep() == null) {</span>
+<span class="nc" id="L45">        preparedStatement.setNull(3, Types.INTEGER);</span>
+      } else {
+<span class="nc" id="L47">        preparedStatement.setInt(3, dailyEvent.getStep());</span>
+      }
+
+<span class="nc bnc" id="L50" title="All 2 branches missed.">      if (dailyEvent.getCalorie() == null) {</span>
+<span class="nc" id="L51">        preparedStatement.setNull(4, Types.INTEGER);</span>
+      } else {
+<span class="nc" id="L53">        preparedStatement.setInt(4, dailyEvent.getCalorie());</span>
+      }
+<span class="nc" id="L55">      preparedStatement.setDouble(5, dailyEvent.getDistance());</span>
+<span class="nc" id="L56">      preparedStatement.setDouble(6, dailyEvent.getDuration());</span>
+
+      // execute insert SQL statement
+<span class="nc" id="L59">      preparedStatement.executeUpdate();</span>
+
+<span class="nc" id="L61">      ResultSet rs = preparedStatement.getGeneratedKeys();</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">      if (rs.next()) {</span>
+<span class="nc" id="L63">        return rs.getInt(1);</span>
+      }
+<span class="nc" id="L65">    } catch (SQLException e) {</span>
+<span class="nc" id="L66">      e.printStackTrace();</span>
+    } finally {
+      try {
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (conn != null) {</span>
+<span class="nc" id="L70">          conn.close();</span>
+        }
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        if (preparedStatement != null) {</span>
+<span class="nc" id="L73">          preparedStatement.close();</span>
+        }
+<span class="nc" id="L75">      } catch (SQLException se) {</span>
+<span class="nc" id="L76">        se.printStackTrace();</span>
+<span class="nc" id="L77">      }</span>
+    }
+<span class="nc" id="L79">    return 0;</span>
+  }
+
+  public List&lt;DailyEvent&gt; getDailyEventDetails(){
+<span class="nc" id="L83">    String selectDailyEventDetails = &quot;SELECT Id, Activity, IF(Distance IS NULL, 0, Distance) AS Distance, IF(Step IS NULL, 0, Step) AS Step, IF(Calorie IS NULL, 0, Calorie) AS Calorie, IF(Duration IS NULL, 0, Duration) AS Duration, Date FROM DailyEvent WHERE Activity='Walking' ORDER BY Date DESC LIMIT 100;\n;&quot;;</span>
+<span class="nc" id="L84">    Connection connection = null;</span>
+<span class="nc" id="L85">    PreparedStatement selectStatement = null;</span>
+<span class="nc" id="L86">    ResultSet resultSet = null;</span>
+<span class="nc" id="L87">    List&lt;DailyEvent&gt; dailyEvents = new ArrayList&lt;&gt;();</span>
+    try {
+<span class="nc" id="L89">      connection = dataSource.getConnection();</span>
+<span class="nc" id="L90">      selectStatement = connection.prepareStatement(selectDailyEventDetails);</span>
+<span class="nc" id="L91">      resultSet = selectStatement.executeQuery();</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">      while (resultSet.next()) {</span>
+<span class="nc" id="L93">        dailyEvents.add(new DailyEvent(</span>
+<span class="nc" id="L94">            resultSet.getLong(&quot;Id&quot;),</span>
+<span class="nc" id="L95">            resultSet.getDate(&quot;Date&quot;),</span>
+<span class="nc" id="L96">            resultSet.getString(&quot;Activity&quot;),</span>
+<span class="nc" id="L97">            resultSet.getInt(&quot;Step&quot;),</span>
+<span class="nc" id="L98">            resultSet.getInt(&quot;Calorie&quot;),</span>
+<span class="nc" id="L99">            resultSet.getDouble(&quot;Distance&quot;),</span>
+<span class="nc" id="L100">            resultSet.getDouble(&quot;Duration&quot;)</span>
+        ));
+      }
+<span class="nc" id="L103">      return dailyEvents;</span>
+<span class="nc" id="L104">    } catch (SQLException e) {</span>
+<span class="nc" id="L105">      e.printStackTrace();</span>
+    } finally {
+<span class="nc bnc" id="L107" title="All 2 branches missed.">      if (connection != null) {</span>
+        try {
+<span class="nc" id="L109">          connection.close();</span>
+<span class="nc" id="L110">        } catch (SQLException e) {</span>
+<span class="nc" id="L111">          e.printStackTrace();</span>
+<span class="nc" id="L112">        }</span>
+      }
+<span class="nc bnc" id="L114" title="All 2 branches missed.">      if (selectStatement != null) {</span>
+        try {
+<span class="nc" id="L116">          selectStatement.close();</span>
+<span class="nc" id="L117">        } catch (SQLException e) {</span>
+<span class="nc" id="L118">          e.printStackTrace();</span>
+<span class="nc" id="L119">        }</span>
+      }
+<span class="nc bnc" id="L121" title="All 2 branches missed.">      if (resultSet != null) {</span>
+        try {
+<span class="nc" id="L123">          resultSet.close();</span>
+<span class="nc" id="L124">        } catch (SQLException e) {</span>
+<span class="nc" id="L125">          e.printStackTrace();</span>
+<span class="nc" id="L126">        }</span>
+      }
+    }
+<span class="nc" id="L129">    return dailyEvents;</span>
+  }
+
+  public List&lt;DailyEvent&gt; getDailyEventStatisticsByDateRange(String startDate, String endDate) {
+<span class="nc" id="L133">    String selectDailyEventStatistics = &quot;SELECT Activity, SUM(DIST) AS Distance, SUM(CAL) AS Calorie, SUM(STP) as Step, SUM(DUR) as Duration from (\n&quot;</span>
+        + &quot;SELECT IF(Distance IS NULL, 0, Distance) AS DIST, IF(Step IS NULL, 0, Step) AS STP, IF(Calorie IS NULL, 0, Calorie) AS CAL, IF(Duration IS NULL, 0, Duration) AS DUR, ACTIVITY, DATE\n&quot;
+        + &quot;FROM DailyEvent) AS t1\n&quot;
+        + &quot;WHERE DATE &gt; ? AND Date &lt;= ?\n&quot;
+        + &quot;GROUP BY Activity;&quot;;
+<span class="nc" id="L138">    Connection connection = null;</span>
+<span class="nc" id="L139">    PreparedStatement selectStatement = null;</span>
+<span class="nc" id="L140">    ResultSet resultSet = null;</span>
+<span class="nc" id="L141">    List&lt;DailyEvent&gt; dailyEvents = new ArrayList&lt;&gt;();</span>
+    try {
+<span class="nc" id="L143">      connection = dataSource.getConnection();</span>
+<span class="nc" id="L144">      selectStatement = connection.prepareStatement(selectDailyEventStatistics);</span>
+<span class="nc" id="L145">      selectStatement.setDate(1, new Date(ParserUtils.getDate(startDate).getTime()));</span>
+<span class="nc" id="L146">      selectStatement.setDate(2, new Date(ParserUtils.getDate(endDate).getTime()));</span>
+<span class="nc" id="L147">      resultSet = selectStatement.executeQuery();</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">      while (resultSet.next()) {</span>
+<span class="nc" id="L149">        dailyEvents.add(new DailyEvent(</span>
+<span class="nc" id="L150">            resultSet.getString(&quot;Activity&quot;),</span>
+<span class="nc" id="L151">            resultSet.getInt(&quot;Step&quot;),</span>
+<span class="nc" id="L152">            resultSet.getInt(&quot;Calorie&quot;),</span>
+<span class="nc" id="L153">            resultSet.getDouble(&quot;Distance&quot;),</span>
+<span class="nc" id="L154">            resultSet.getDouble(&quot;Duration&quot;)</span>
+            ));
+      }
+<span class="nc" id="L157">      return dailyEvents;</span>
+<span class="nc" id="L158">    } catch (SQLException | ParseException e) {</span>
+<span class="nc" id="L159">      e.printStackTrace();</span>
+    } finally {
+<span class="nc bnc" id="L161" title="All 2 branches missed.">      if (connection != null) {</span>
+        try {
+<span class="nc" id="L163">          connection.close();</span>
+<span class="nc" id="L164">        } catch (SQLException e) {</span>
+<span class="nc" id="L165">          e.printStackTrace();</span>
+<span class="nc" id="L166">        }</span>
+      }
+<span class="nc bnc" id="L168" title="All 2 branches missed.">      if (selectStatement != null) {</span>
+        try {
+<span class="nc" id="L170">          selectStatement.close();</span>
+<span class="nc" id="L171">        } catch (SQLException e) {</span>
+<span class="nc" id="L172">          e.printStackTrace();</span>
+<span class="nc" id="L173">        }</span>
+      }
+<span class="nc bnc" id="L175" title="All 2 branches missed.">      if (resultSet != null) {</span>
+        try {
+<span class="nc" id="L177">          resultSet.close();</span>
+<span class="nc" id="L178">        } catch (SQLException e) {</span>
+<span class="nc" id="L179">          e.printStackTrace();</span>
+<span class="nc" id="L180">        }</span>
+      }
+    }
+<span class="nc" id="L183">    return dailyEvents;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

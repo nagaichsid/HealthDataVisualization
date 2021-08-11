@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PlaceLogDao.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-backend</a> &gt; <a href="index.source.html" class="el_package">dao</a> &gt; <span class="el_source">PlaceLogDao.java</span></div><h1>PlaceLogDao.java</h1><pre class="source lang-java linenums">package dao;
+
+import com.zaxxer.hikari.HikariDataSource;
+import db_dump.ParserUtils;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.text.ParseException;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import model.PlaceLog;
+
+public class PlaceLogDao {
+  private static HikariDataSource dataSource;
+<span class="nc" id="L19">  public static PlaceLogDao placeLogDao = null;</span>
+
+<span class="nc" id="L21">  private PlaceLogDao() {</span>
+<span class="nc" id="L22">    dataSource = DBCPDataSource.getDataSource();</span>
+<span class="nc" id="L23">  }</span>
+
+  public static PlaceLogDao getInstance(){
+<span class="nc bnc" id="L26" title="All 2 branches missed.">    if(placeLogDao == null){</span>
+<span class="nc" id="L27">      placeLogDao = new PlaceLogDao();</span>
+    }
+<span class="nc" id="L29">    return placeLogDao;</span>
+  }
+
+  public Long createPlaceLog(PlaceLog placeLog) {
+<span class="nc" id="L33">    Connection conn = null;</span>
+<span class="nc" id="L34">    PreparedStatement preparedStatement = null;</span>
+<span class="nc" id="L35">    String insertQueryStatement = &quot;INSERT INTO PlaceLog (PlaceId, PlaceName, Longitude, Latitude, StartTime, EndTime, Date) &quot; +</span>
+        &quot;VALUES (?,?,?,?,?,?,?)&quot;;
+    try {
+<span class="nc" id="L38">      conn = dataSource.getConnection();</span>
+<span class="nc" id="L39">      preparedStatement = conn.prepareStatement(insertQueryStatement, PreparedStatement.RETURN_GENERATED_KEYS);</span>
+<span class="nc" id="L40">      preparedStatement.setInt(1, placeLog.getPlaceId());</span>
+<span class="nc" id="L41">      preparedStatement.setString(2, placeLog.getPlaceName());</span>
+<span class="nc" id="L42">      preparedStatement.setDouble(3, placeLog.getLongitude());</span>
+<span class="nc" id="L43">      preparedStatement.setDouble(4, placeLog.getLatitude());</span>
+<span class="nc" id="L44">      preparedStatement.setTime(5, Time.valueOf(placeLog.getStartTime()));</span>
+<span class="nc" id="L45">      preparedStatement.setTime(6, Time.valueOf(placeLog.getEndTime()));</span>
+<span class="nc" id="L46">      preparedStatement.setDate(7, new Date(placeLog.getDate().getTime()));</span>
+
+      // execute insert SQL statement
+<span class="nc" id="L49">      preparedStatement.executeUpdate();</span>
+
+<span class="nc" id="L51">      ResultSet rs = preparedStatement.getGeneratedKeys();</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">      if(rs.next()){</span>
+<span class="nc" id="L53">        return rs.getLong(1);</span>
+      }
+<span class="nc" id="L55">    } catch (SQLException e) {</span>
+<span class="nc" id="L56">      e.printStackTrace();</span>
+    } finally {
+      try {
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (conn != null) {</span>
+<span class="nc" id="L60">          conn.close();</span>
+        }
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (preparedStatement != null) {</span>
+<span class="nc" id="L63">          preparedStatement.close();</span>
+        }
+<span class="nc" id="L65">      } catch (SQLException se) {</span>
+<span class="nc" id="L66">        se.printStackTrace();</span>
+<span class="nc" id="L67">      }</span>
+    }
+<span class="nc" id="L69">    return 0L;</span>
+  }
+
+  public List&lt;PlaceLog&gt; getPlaceLogByDate(String date) {
+<span class="nc" id="L73">    String selectPlaceLogs=&quot;SELECT Id, PlaceId, PlaceName, Longitude, Latitude, StartTime, EndTime, Date FROM PlaceLog WHERE Date=?;&quot;;</span>
+<span class="nc" id="L74">    Connection connection=null;</span>
+<span class="nc" id="L75">    PreparedStatement selectStatement=null;</span>
+<span class="nc" id="L76">    ResultSet resultSet=null;</span>
+<span class="nc" id="L77">    List&lt;PlaceLog&gt; placeLogs=new ArrayList&lt;&gt;();</span>
+    try {
+<span class="nc" id="L79">      connection=dataSource.getConnection();</span>
+<span class="nc" id="L80">      selectStatement=connection.prepareStatement(selectPlaceLogs);</span>
+<span class="nc" id="L81">      selectStatement.setDate(1, new Date(ParserUtils.getDate(date).getTime()));</span>
+<span class="nc" id="L82">      resultSet=selectStatement.executeQuery();</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">      while(resultSet.next()) {</span>
+<span class="nc" id="L84">        placeLogs.add(new PlaceLog(</span>
+<span class="nc" id="L85">            resultSet.getLong(&quot;Id&quot;),</span>
+<span class="nc" id="L86">            resultSet.getInt(&quot;PlaceId&quot;),</span>
+<span class="nc" id="L87">            resultSet.getString(&quot;PlaceName&quot;),</span>
+<span class="nc" id="L88">            resultSet.getDouble(&quot;Longitude&quot;),</span>
+<span class="nc" id="L89">            resultSet.getDouble(&quot;Latitude&quot;),</span>
+<span class="nc" id="L90">            LocalTime.of(resultSet.getTime(&quot;StartTime&quot;).getHours(), resultSet.getTime(&quot;StartTime&quot;).getMinutes(), resultSet.getTime(&quot;StartTime&quot;).getSeconds()),</span>
+<span class="nc" id="L91">            LocalTime.of(resultSet.getTime(&quot;EndTime&quot;).getHours(), resultSet.getTime(&quot;StartTime&quot;).getMinutes(), resultSet.getTime(&quot;StartTime&quot;).getSeconds()),</span>
+<span class="nc" id="L92">            new Date(ParserUtils.getDate(date).getTime())));</span>
+      }
+<span class="nc" id="L94">      return placeLogs;</span>
+<span class="nc" id="L95">    }catch (SQLException | ParseException e) {</span>
+<span class="nc" id="L96">      e.printStackTrace();</span>
+    }finally {
+<span class="nc bnc" id="L98" title="All 2 branches missed.">      if(connection!=null) {</span>
+        try {
+<span class="nc" id="L100">          connection.close();</span>
+<span class="nc" id="L101">        } catch (SQLException e) {</span>
+<span class="nc" id="L102">          e.printStackTrace();</span>
+<span class="nc" id="L103">        }</span>
+      }
+<span class="nc bnc" id="L105" title="All 2 branches missed.">      if(selectStatement!=null) {</span>
+        try {
+<span class="nc" id="L107">          selectStatement.close();</span>
+<span class="nc" id="L108">        } catch (SQLException e) {</span>
+<span class="nc" id="L109">          e.printStackTrace();</span>
+<span class="nc" id="L110">        }</span>
+      }
+<span class="nc bnc" id="L112" title="All 2 branches missed.">      if(resultSet!=null) {</span>
+        try {
+<span class="nc" id="L114">          resultSet.close();</span>
+<span class="nc" id="L115">        } catch (SQLException e) {</span>
+<span class="nc" id="L116">          e.printStackTrace();</span>
+<span class="nc" id="L117">        }</span>
+      }
+    }
+<span class="nc" id="L120">    return placeLogs;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

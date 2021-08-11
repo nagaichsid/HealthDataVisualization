@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PlaceActivityProcessor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-backend</a> &gt; <a href="index.source.html" class="el_package">processor</a> &gt; <span class="el_source">PlaceActivityProcessor.java</span></div><h1>PlaceActivityProcessor.java</h1><pre class="source lang-java linenums">package processor;
+
+import dao.PlaceLogDao;
+import dao.WalkingActivityDao;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import model.PlaceLog;
+import model.PlaceWithActivities;
+import model.WalkingActivity;
+
+public class PlaceActivityProcessor {
+  private PlaceLogDao placeLogDao;
+  private WalkingActivityDao walkingActivityDao;
+  private static PlaceActivityProcessor placeActivityProcessor;
+
+<span class="nc" id="L18">  private PlaceActivityProcessor() {</span>
+<span class="nc" id="L19">    placeLogDao = PlaceLogDao.getInstance();</span>
+<span class="nc" id="L20">    walkingActivityDao = WalkingActivityDao.getInstance();</span>
+<span class="nc" id="L21">  }</span>
+
+  public static PlaceActivityProcessor getInstance() {
+<span class="nc bnc" id="L24" title="All 2 branches missed.">    if (placeActivityProcessor == null) {</span>
+<span class="nc" id="L25">      placeActivityProcessor = new PlaceActivityProcessor();</span>
+    }
+<span class="nc" id="L27">    return placeActivityProcessor;</span>
+  }
+
+  public List&lt;PlaceWithActivities&gt; findPlaceLogWithActivitiesByDate(String date) {
+<span class="nc" id="L31">    List&lt;PlaceWithActivities&gt; lst = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L32">    List&lt;PlaceLog&gt; placeLogs = placeLogDao.getPlaceLogByDate(date);</span>
+<span class="nc" id="L33">    Map&lt;Integer, PlaceWithActivities&gt; map = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">    for (PlaceLog placeLog: placeLogs) {</span>
+<span class="nc" id="L35">      Long logId = placeLog.getId();</span>
+<span class="nc" id="L36">      WalkingActivity walkingActivity = walkingActivityDao.getWalkingActivitiesByLogId(logId);</span>
+<span class="nc" id="L37">      Integer placeId = placeLog.getPlaceId();</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">      if (map.containsKey(placeId)) {</span>
+<span class="nc" id="L39">        PlaceWithActivities placeWithActivities = map.get(placeId);</span>
+<span class="nc" id="L40">        placeWithActivities.updatePlaceLogWithActivities(placeLog, walkingActivity);</span>
+<span class="nc" id="L41">      }</span>
+      else {
+<span class="nc" id="L43">        map.put(placeId, new PlaceWithActivities(placeLog, walkingActivity));</span>
+      }
+<span class="nc" id="L45">    }</span>
+<span class="nc" id="L46">    lst.addAll(map.values());</span>
+<span class="nc" id="L47">    return lst;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

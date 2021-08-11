@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ParserUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">project-backend</a> &gt; <a href="index.source.html" class="el_package">db_dump</a> &gt; <span class="el_source">ParserUtils.java</span></div><h1>ParserUtils.java</h1><pre class="source lang-java linenums">package db_dump;
+
+import com.google.gson.JsonObject;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import model.DailyEvent;
+import model.PlaceLog;
+import model.WalkingActivity;
+
+<span class="nc" id="L13">public class ParserUtils {</span>
+  public static Date getDate(String string) throws ParseException {
+<span class="fc" id="L15">    SimpleDateFormat format=new SimpleDateFormat(&quot;yyyyMMdd&quot;);</span>
+<span class="fc" id="L16">    Date date = format.parse(string);</span>
+<span class="fc" id="L17">    return date;</span>
+  }
+
+  public static LocalTime getLocalTime(String string){
+<span class="fc" id="L21">    DateTimeFormatter timeFormatter=DateTimeFormatter.ofPattern(&quot;yyyyMMdd'T'HHmmss&quot;);</span>
+<span class="fc" id="L22">    return LocalTime.parse(string.substring(0, string.length()-5),timeFormatter);</span>
+  }
+
+  public static DailyEvent getDailyEventFromJson(JsonObject activity, Date date) {
+<span class="fc" id="L26">    DailyEvent dailyEvent = new DailyEvent();</span>
+<span class="fc" id="L27">    dailyEvent.setDate(date);</span>
+
+<span class="fc" id="L29">    dailyEvent.setActivity(activity.get(&quot;activity&quot;).getAsString());</span>
+<span class="fc" id="L30">    dailyEvent.setDuration(activity.get(&quot;duration&quot;).getAsDouble());</span>
+<span class="fc" id="L31">    dailyEvent.setDistance(activity.get(&quot;distance&quot;).getAsDouble());</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">    if (activity.has(&quot;calories&quot;)) {</span>
+<span class="fc" id="L33">      dailyEvent.setCalorie(activity.get(&quot;calories&quot;).getAsInt());</span>
+    }
+<span class="fc bfc" id="L35" title="All 2 branches covered.">    if (activity.has(&quot;steps&quot;)) {</span>
+<span class="fc" id="L36">      dailyEvent.setStep(activity.get(&quot;steps&quot;).getAsInt());</span>
+    }
+<span class="fc" id="L38">    return dailyEvent;</span>
+  }
+
+  public static PlaceLog getPlaceLogFromJson(JsonObject segment, Date date) {
+<span class="fc" id="L42">    PlaceLog placeLog = new PlaceLog();</span>
+<span class="fc" id="L43">    placeLog.setDate(date);</span>
+<span class="fc" id="L44">    placeLog.setStartTime(getLocalTime(segment.get(&quot;startTime&quot;).getAsString()));</span>
+<span class="fc" id="L45">    placeLog.setEndTime(getLocalTime(segment.get(&quot;endTime&quot;).getAsString()));</span>
+<span class="fc" id="L46">    JsonObject place = segment.get(&quot;place&quot;).getAsJsonObject();</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">    if (!place.has(&quot;name&quot;)) {</span>
+<span class="fc" id="L48">      return null;</span>
+    }
+<span class="fc" id="L50">    placeLog.setPlaceName(place.get(&quot;name&quot;).getAsString());</span>
+<span class="fc" id="L51">    placeLog.setPlaceId(place.get(&quot;id&quot;).getAsInt());</span>
+<span class="fc" id="L52">    JsonObject location = place.get(&quot;location&quot;).getAsJsonObject();</span>
+<span class="fc" id="L53">    placeLog.setLatitude(location.get(&quot;lat&quot;).getAsDouble());</span>
+<span class="fc" id="L54">    placeLog.setLongitude(location.get(&quot;lon&quot;).getAsDouble());</span>
+<span class="fc" id="L55">    return placeLog;</span>
+  }
+
+  public static WalkingActivity getWalkingActivityFromJson(JsonObject placeActivity, Long placeId) {
+<span class="fc" id="L59">    WalkingActivity walkingActivity = new WalkingActivity();</span>
+<span class="fc" id="L60">    walkingActivity.setPlaceLogId(placeId);</span>
+<span class="fc" id="L61">    walkingActivity.setDuration(placeActivity.get(&quot;duration&quot;).getAsDouble());</span>
+<span class="fc" id="L62">    walkingActivity.setDistance(placeActivity.get(&quot;distance&quot;).getAsDouble());</span>
+<span class="fc" id="L63">    walkingActivity.setCalorie(placeActivity.get(&quot;calories&quot;).getAsInt());</span>
+<span class="fc" id="L64">    walkingActivity.setStep(placeActivity.get(&quot;steps&quot;).getAsInt());</span>
+<span class="fc" id="L65">    return walkingActivity;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>
