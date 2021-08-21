@@ -22,7 +22,7 @@
 
 ## How to run the app
 - Where the code is
-    - https://github.ccs.neu.edu/nagaichsid/CS5500_Project
+    - https://github.com/nagaichsid/Health_Data_Visualization
 - How to build the code
     - Backend
         - The backend is in Java, hosted by tomcat. 
